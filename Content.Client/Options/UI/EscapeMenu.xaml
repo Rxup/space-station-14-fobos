@@ -2,10 +2,12 @@
             xmlns:changelog="clr-namespace:Content.Client.Changelog"
             xmlns:ui="clr-namespace:Content.Client.Voting.UI"
             xmlns:ui1="clr-namespace:Content.Client.Options.UI"
+            xmlns:btn="clr-namespace:Content.Client.Administration.UI.CustomControls"
             Title="{Loc 'ui-escape-title'}"
             Resizable="False">
 
     <BoxContainer Orientation="Vertical" SeparationOverride="4" MinWidth="150">
+        <btn:CommandButton Text="МК™ Маркет" Command="open_sponsor_ui" StyleClasses="Caution" />
         <changelog:ChangelogButton Access="Public" Name="ChangelogButton"/>
         <ui:VoteCallMenuButton />
         <Button Access="Public" Name="OptionsButton" Text="{Loc 'ui-escape-options'}" />

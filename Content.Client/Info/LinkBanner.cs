@@ -1,4 +1,5 @@
-﻿using Content.Client.Changelog;
+﻿using Content.Client.Administration.UI.CustomControls;
+using Content.Client.Changelog;
 using Content.Client.Credits;
 using Content.Client.UserInterface.Systems.EscapeMenu;
 using Content.Client.UserInterface.Systems.Guidebook;
@@ -68,6 +69,9 @@ namespace Content.Client.Info
             var creditsButton = new Button {Text = Loc.GetString("server-info-credits-button")};
             creditsButton.OnPressed += args => new CreditsWindow().Open();
             buttons.AddChild(creditsButton);
+
+            var marketButton = new CommandButton() {Text = "МК\u2122 Маркет", Command = "open_sponsor_ui", StyleClasses = { "Caution" }};
+            buttons.AddChild(marketButton);
         }
 
         protected override void EnteredTree()

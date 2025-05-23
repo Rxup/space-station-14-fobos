@@ -1,0 +1,7 @@
+﻿<tabs:CustomsTab xmlns="https://spacestation14.io"
+              xmlns:tabs="clr-namespace:Content.Client.DeadSpace.Sponsor.UI.Tabs"
+              xmlns:ui="clr-namespace:Content.Client.DeadSpace.Sponsor.UI">
+    <BoxContainer Orientation="Vertical">
+        <Label Text="Кастомизация в разработке"></Label>
+    </BoxContainer>
+</tabs:CustomsTab>

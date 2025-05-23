@@ -1,0 +1,28 @@
+﻿<tabs:SubsTab xmlns="https://spacestation14.io"
+                  xmlns:tabs="clr-namespace:Content.Client.DeadSpace.Sponsor.UI.Tabs"
+                  xmlns:ui="clr-namespace:Content.Client.DeadSpace.Sponsor.UI"
+                  xmlns:graphics="clr-namespace:Robust.Client.Graphics;assembly=Robust.Client">
+    <PanelContainer VerticalExpand="True" HorizontalExpand="True">
+        <PanelContainer.PanelOverride>
+            <graphics:StyleBoxFlat BackgroundColor="#000000FF" />
+        </PanelContainer.PanelOverride>
+        <BoxContainer Orientation="Horizontal" VerticalExpand="True">
+            <ScrollContainer
+                Name="StoreListingsScroll"
+                HScrollEnabled="False"
+                HorizontalExpand="True"
+                MinSize="100 256"
+                SizeFlagsStretchRatio="2"
+                VerticalExpand="True">
+                <BoxContainer
+                    Name="StoreListingsContainer"
+                    MinSize="100 256"
+                    Orientation="Vertical"
+                    SizeFlagsStretchRatio="2"
+                    VerticalExpand="True">
+                    <!--  Listings are added here by code  -->
+                </BoxContainer>
+            </ScrollContainer>
+        </BoxContainer>
+    </PanelContainer>
+</tabs:SubsTab>

@@ -1,0 +1,7 @@
+﻿<tabs:GeneralTab xmlns="https://spacestation14.io"
+                  xmlns:tabs="clr-namespace:Content.Client.DeadSpace.Sponsor.UI.Tabs"
+                  xmlns:ui="clr-namespace:Content.Client.DeadSpace.Sponsor.UI">
+    <BoxContainer Orientation="Vertical" VerticalExpand="True" HorizontalAlignment="Stretch">
+        <Label Text="Главная в разработке 2"></Label>
+    </BoxContainer>
+</tabs:GeneralTab>
