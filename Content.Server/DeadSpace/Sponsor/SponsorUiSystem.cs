@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.EUI;
 using Content.Shared.Administration;
@@ -33,10 +34,10 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
         Subs.CVar(_cfg,
             CCCCVars.SponsorUiApi,
             (val) =>
-        {
-            _apiUrl = val;
-            ApiChangeHandler();
-        },
+            {
+                _apiUrl = val;
+                ApiChangeHandler();
+            },
             true);
         Subs.CVar(_cfg,
             CCCCVars.SponsorUiApiToken,
@@ -57,7 +58,7 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
         }
         catch (Exception e)
         {
-            Log.Warning("SponsorUiSystem cleanup failed: "+e.ToString());
+            Log.Warning("SponsorUiSystem cleanup failed: " + e.ToString());
         }
     }
 
@@ -83,6 +84,7 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
                 // ignore
             }
         }
+
         _sponsorEui.Clear();
     }
 
@@ -100,7 +102,7 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
             BaseAddress = new Uri(_apiUrl),
             DefaultRequestHeaders =
             {
-                {"Authorization", ["Bearer "+_apiToken]}
+                { "Authorization", ["Bearer " + _apiToken] }
             }
         };
 
@@ -117,16 +119,18 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
             shell.WriteError($"system sponsor ui is offline.");
             return;
         }
+
         if (shell.Player == null)
         {
             shell.WriteError($"You need to be logged in to open sponsor ui.");
             return;
         }
+
         var player = shell.Player.UserId;
 
         if (_sponsorEui.ContainsKey(player))
         {
-            if(_sponsorEui[player].LoadLock.IsWriteLockHeld)
+            if (_sponsorEui[player].LoadLock.IsWriteLockHeld)
                 return;
 
             try
@@ -152,6 +156,29 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
 
     public async Task<SponsorPlayerInfo?> GetPlayerInfo(NetUserId userId)
     {
-        return await _httpClient.GetFromJsonAsync<SponsorPlayerInfo>("api/sponsorUi/"+userId);
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<SponsorPlayerInfo>($"api/sponsorUi/{userId}");
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.ToString());
+            return null;
+        }
+    }
+
+    public async Task<bool> BuyItem(NetUserId userId, int buyItemId, PriceType priceType, int days)
+    {
+        try
+        {
+            var response =
+                await _httpClient.PostAsJsonAsync($"api/sponsorUi/{userId}", new { buyItemId, priceType, days });
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.ToString());
+            return false;
+        }
     }
 }

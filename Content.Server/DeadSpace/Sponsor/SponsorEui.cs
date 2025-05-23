@@ -33,6 +33,7 @@ public sealed class SponsorEui : BaseEui
         {
             return;
         }
+
         try
         {
             LoadLock.EnterWriteLock();
@@ -42,7 +43,7 @@ public sealed class SponsorEui : BaseEui
                 PlayerInfo = await _system.GetPlayerInfo(_userId),
             };
 
-            if(State.PlayerInfo != null)
+            if (State.PlayerInfo != null)
             {
                 SendMessage(new SponsorPlayerUpdateEuiMsg
                 {
@@ -54,30 +55,35 @@ public sealed class SponsorEui : BaseEui
         {
             LoadLock.ExitWriteLock();
         }
-
     }
 
-    public override void HandleMessage(EuiMessageBase msg)
+    public override async void HandleMessage(EuiMessageBase msg)
     {
-        if (msg is SponsorPlayerPrintRentEuiMsg rent)
+        if (LoadLock.IsWriteLockHeld)
         {
-            _system.Log.Info($"Пользователь отправил запрос на выдачу из подписки {rent.RentId}");
-            // Печать аренды
             return;
         }
 
-        if (msg is SponsorPlayerBuyEuiMsg buy)
+        try
         {
-            _system.Log.Info($"Пользователь отправил запрос на разовую покупки {buy.ItemId}");
-            // купить + печать
-            return;
-        }
+            LoadLock.EnterWriteLock();
+            if (msg is SponsorPlayerPrintRentEuiMsg rent)
+            {
+                _system.Log.Info($"Пользователь отправил запрос на выдачу {rent.RentId}");
+                // Печать аренды
+                return;
+            }
 
-        if (msg is SponsorPlayerBuyItemRentEuiMsg buyRent)
+            if (msg is SponsorPlayerBuyEuiMsg buy)
+            {
+                _system.Log.Info($"Пользователь отправил запрос на разовую покупки {buy.ItemId}");
+                await _system.BuyItem(_userId, buy.ItemId, buy.PriceType, buy.Days);
+                return;
+            }
+        }
+        finally
         {
-            _system.Log.Info($"Пользователь отправил запрос на покупку подписки на предмет {buyRent.ItemId} {buyRent.Days} дней");
-            // купить в аренду
-            return;
+            LoadLock.ExitWriteLock();
         }
     }
 

@@ -9,8 +9,10 @@
                 MinWidth="64"
                 HorizontalAlignment="Right"
                 Access="Public" />
-            <BoxContainer Orientation="Vertical" Name="RentButtons">
-
+            <BoxContainer Orientation="Horizontal" Name="RentButtons">
+                <OptionButton Name="Currency"/>
+                <OptionButton Name="Range"/>
+                <Button Name="BuyButton"/>
             </BoxContainer>
         </BoxContainer>
         <PanelContainer StyleClasses="HighDivider" />

@@ -72,20 +72,13 @@ public sealed class SponsorEui : BaseEui
         }
     }
 
-    public void BuyButton(int itemId)
+    public void BuyButton(int itemId, PriceType priceType, int days)
     {
         SendMessage(new SponsorPlayerBuyEuiMsg()
         {
-            ItemId = itemId
-        });
-    }
-
-    public void BuyRentButton(int itemId, int days)
-    {
-        SendMessage(new SponsorPlayerBuyItemRentEuiMsg()
-        {
             ItemId = itemId,
-            Days = days
+            PriceType = priceType,
+            Days = days,
         });
     }
 }

@@ -7,17 +7,27 @@
                MinSize="800 450">
     <BoxContainer Orientation="Vertical" Margin="5 5 5 5">
         <GridContainer Name="AccessLevelGrid" Columns="3" HorizontalAlignment="Center">
-            <TextureRect VerticalAlignment="Center" HorizontalAlignment="Left" TextureScale="1 1" TexturePath="/Textures/_DeadSpace/Interface/Sponsor/logo.png"/>
+            <TextureRect VerticalAlignment="Center" HorizontalAlignment="Left" TextureScale="1 1"
+                         TexturePath="/Textures/_DeadSpace/Interface/Sponsor/logo.png" />
             <Control AlwaysRender="True" MinWidth="300">
             </Control>
             <BoxContainer Orientation="Horizontal">
                 <Button Text="Пополнить" Access="Public" Name="AddBalanceButton"></Button>
                 <BoxContainer Orientation="Vertical" Margin="15 0 0 0">
                     <Label Text="LOGIN" Access="Public" Name="LoginField"></Label>
-                    <BoxContainer Orientation="Horizontal">
-                        <Label Text="Баланс: "></Label>
-                        <Label Text="99999" Access="Public" Name="BalanceField"></Label>
-                        <TextureRect VerticalAlignment="Center" HorizontalAlignment="Right" TextureScale="0.5 0.5" TexturePath="/Textures/_DeadSpace/Interface/Sponsor/coin.png"/>
+                    <BoxContainer Orientation="Vertical">
+                        <BoxContainer>
+                            <Label Text="Монеты: "></Label>
+                            <Label Text="99999" Access="Public" Name="CoinField"></Label>
+                            <TextureRect VerticalAlignment="Center" HorizontalAlignment="Right" TextureScale="0.5 0.5"
+                                         TexturePath="/Textures/_DeadSpace/Interface/Sponsor/coin.png" />
+                        </BoxContainer>
+                        <BoxContainer>
+                            <Label Text="Кристаллы: "></Label>
+                            <Label Text="99999" Access="Public" Name="CrystalField"></Label>
+                            <TextureRect VerticalAlignment="Center" HorizontalAlignment="Right" TextureScale="0.5 0.5"
+                                         TexturePath="/Textures/_DeadSpace/Interface/Sponsor/crystal.png" />
+                        </BoxContainer>
                     </BoxContainer>
                 </BoxContainer>
             </BoxContainer>

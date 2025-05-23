@@ -22,7 +22,9 @@ public sealed partial class SponsorMenu : DefaultWindow, SponsorEui.ISponsorEui
         //Tabs.OnTabChanged += TabsOnOnTabChanged;
 
         LoginField.Text = _playerManager.LocalSession?.Name ?? "<UNK>";
-        BalanceField.Text = "";
+        CoinField.Text = "";
+        CrystalField.Text = "";
+
     }
 /*
     private void TabsOnOnTabChanged(int obj)
@@ -61,7 +63,8 @@ public sealed partial class SponsorMenu : DefaultWindow, SponsorEui.ISponsorEui
 
     public void UpdatePlayerInfo()
     {
-        BalanceField.Text = currentEui?.PlayerInfo.Coin.ToString();
+        CoinField.Text = currentEui?.PlayerInfo.Coin.ToString();
+        CrystalField.Text = currentEui?.PlayerInfo.Crystal.ToString();
 
         //relay
         foreach (var tab in Tabs.Children)

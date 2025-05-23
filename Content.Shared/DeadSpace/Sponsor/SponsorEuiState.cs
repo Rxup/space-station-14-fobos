@@ -26,12 +26,15 @@ public sealed class SponsorPlayerPrintRentEuiMsg : EuiMessageBase
 public sealed class SponsorPlayerBuyEuiMsg : EuiMessageBase
 {
     public required int ItemId;
-}
-[Serializable, NetSerializable]
-public sealed class SponsorPlayerBuyItemRentEuiMsg : EuiMessageBase
-{
-    public required int ItemId;
+    public required PriceType PriceType;
     public required int Days;
+}
+
+[Serializable, NetSerializable]
+public enum PriceType
+{
+    Coin = 1,
+    Crystal = 2,
 }
 
 [Serializable, NetSerializable]
@@ -41,8 +44,14 @@ public sealed class SponsorCatalogItem
     public required string CategoryName { get; set; }
     public required string Name { get; set; }
     public string? GamePrototype { get; set; }
-    public int? Price { get; set; }
-    public Dictionary<int,int> PriceRent { get; set; } = new();
+    public Dictionary<PriceType, List<PriceRow>>? Prices { get; set; }
+
+    [Serializable, NetSerializable]
+    public sealed class PriceRow
+    {
+        public int Days { get; set; }
+        public int Price { get; set; }
+    }
 }
 
 [Serializable, NetSerializable]
