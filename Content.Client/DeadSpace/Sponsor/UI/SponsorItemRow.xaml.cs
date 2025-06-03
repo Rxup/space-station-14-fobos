@@ -31,10 +31,12 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
         IoCManager.InjectDependencies(this);
 
         _spriteSystem = _entityManager.System<SpriteSystem>();
-        StoreItemBuyButton.OnPressed += StoreItemBuyButtonOnOnPressed;
+        StoreItemGetButton.OnPressed += StoreItemGetButtonOnOnPressed;
+        BuyButton.OnPressed += BuyButtonOnOnPressed;
         Range.OnItemSelected += UpdateBuyButton;
         Currency.OnItemSelected += UpdateRanges;
     }
+
 
     private SponsorEui _eui = default!;
 
@@ -50,7 +52,7 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
 
         if (rent != null && rent.ExpirationDate == null)
         {
-            StoreItemBuyButton.Text = $"Получить";
+            StoreItemGetButton.Text = $"Получить";
             DiscountSubText.Text = "Навсегда";
             RentButtons.Visible = false;
             return;
@@ -60,12 +62,12 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
         {
             if (rent is { ExpirationDate: not null })
             {
-                StoreItemBuyButton.Text = $"Получить";
+                StoreItemGetButton.Text = $"Получить";
                 DiscountSubText.Text = "Аренда до: " + rent.ExpirationDate.Value.ToString("g");
             }
             else
             {
-                StoreItemBuyButton.Visible = false;
+                StoreItemGetButton.Visible = false;
             }
 
             Currency.Clear();
@@ -136,7 +138,12 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
         }
     }
 
-    private void StoreItemBuyButtonOnOnPressed(BaseButton.ButtonEventArgs obj)
+    private void StoreItemGetButtonOnOnPressed(BaseButton.ButtonEventArgs obj)
+    {
+        _eui.GetButton(_eui.PlayerInfo.RentItems.First(x => x.ItemId == _itemId).Id);
+    }
+
+    private void BuyButtonOnOnPressed(BaseButton.ButtonEventArgs obj)
     {
         _eui.BuyButton(_itemId, (PriceType)Currency.SelectedId, Range.SelectedId);
     }

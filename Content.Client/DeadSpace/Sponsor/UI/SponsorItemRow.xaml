@@ -5,9 +5,10 @@
             <Label Name="DiscountSubText"
                    HorizontalAlignment="Right"/>
             <Button
-                Name="StoreItemBuyButton"
+                Name="StoreItemGetButton"
                 MinWidth="64"
                 HorizontalAlignment="Right"
+                StyleClasses="Caution"
                 Access="Public" />
             <BoxContainer Orientation="Horizontal" Name="RentButtons">
                 <OptionButton Name="Currency"/>

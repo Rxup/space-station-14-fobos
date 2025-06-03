@@ -31,6 +31,12 @@ public sealed class SponsorPlayerBuyEuiMsg : EuiMessageBase
 }
 
 [Serializable, NetSerializable]
+public sealed class OperationResultEuiMsg : EuiMessageBase
+{
+    public required string Result = string.Empty;
+}
+
+[Serializable, NetSerializable]
 public enum PriceType
 {
     Coin = 1,

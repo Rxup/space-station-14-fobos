@@ -8,9 +8,13 @@ using Content.Shared.Administration;
 using Content.Shared.DeadSpace.CCCCVars;
 using Content.Shared.DeadSpace.Sponsor;
 using Content.Shared.GameTicking;
+using Content.Shared.Hands.EntitySystems;
+using Content.Shared.Mobs.Systems;
+using Robust.Server.Player;
 using Robust.Shared.Configuration;
 using Robust.Shared.Console;
 using Robust.Shared.Network;
+using Robust.Shared.Player;
 
 namespace Content.Server.DeadSpace.Sponsor;
 
@@ -19,12 +23,16 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
     [Dependency] private readonly IConsoleHost _console = default!;
     [Dependency] private readonly EuiManager _euiManager = default!;
     [Dependency] private readonly IConfigurationManager _cfg = default!;
+    [Dependency] private readonly ISharedPlayerManager _playerManager = default!;
+    [Dependency] private readonly MobStateSystem _mobStateSystem = default!;
+    [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
 
     private bool _enabled = false;
     private string _apiToken = "";
     private string _apiUrl = "";
 
     public List<SponsorCatalogItem> Catalog { get; private set; } = [];
+    public HashSet<int> SpawnedRents = [];
 
     public override void Initialize()
     {
@@ -54,6 +62,7 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
     {
         try
         {
+            SpawnedRents.Clear();
             await ReLoadCatalog();
         }
         catch (Exception e)
@@ -173,6 +182,26 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
         {
             var response =
                 await _httpClient.PostAsJsonAsync($"api/sponsorUi/{userId}", new { buyItemId, priceType, days });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                SendMessage(userId, await response.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                if (_sponsorEui.TryGetValue(userId, out var sponsorEui))
+                {
+                    sponsorEui.State.PlayerInfo = await response.Content.ReadFromJsonAsync<SponsorPlayerInfo>();
+                    if (sponsorEui.State.PlayerInfo != null)
+                    {
+                        sponsorEui.SendMessage(new SponsorPlayerUpdateEuiMsg
+                        {
+                            PlayerInfo = sponsorEui.State.PlayerInfo!,
+                        });
+                    }
+                }
+            }
+
             return response.IsSuccessStatusCode;
         }
         catch (Exception e)
@@ -180,5 +209,37 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
             Log.Error(e.ToString());
             return false;
         }
+    }
+
+    public void SendMessage(NetUserId userId, string msg)
+    {
+        if (!_sponsorEui.TryGetValue(userId, out var sponsorEui))
+            return;
+
+        sponsorEui.SendMessage(new OperationResultEuiMsg
+        {
+            Result = msg,
+        });
+    }
+
+    public void PrintItem(NetUserId userId, SponsorPlayerItem playerRent)
+    {
+        if (SpawnedRents.Contains(playerRent.Id))
+        {
+            SendMessage(userId, "Уже использовано в этом раунде");
+            return;
+        }
+
+        var session = _playerManager.GetSessionById(userId);
+        if (session.AttachedEntity is { Valid: true } playerEnt && _mobStateSystem.IsAlive(playerEnt))
+        {
+            var catalogItem = Catalog.First(x => x.ItemId == playerRent.ItemId);
+            var item = SpawnAtPosition(catalogItem.GamePrototype, Transform(playerEnt).Coordinates);
+            SpawnedRents.Add(playerRent.Id);
+            _handsSystem.TryPickupAnyHand(playerEnt, item);
+            return;
+        }
+
+        SendMessage(userId, "Невозможно выдать предмет в текущем состоянии");
     }
 }

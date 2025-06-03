@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Content.Server.EUI;
 using Content.Shared.DeadSpace.Sponsor;
@@ -67,11 +68,18 @@ public sealed class SponsorEui : BaseEui
         try
         {
             LoadLock.EnterWriteLock();
-            if (msg is SponsorPlayerPrintRentEuiMsg rent)
+            if (msg is SponsorPlayerPrintRentEuiMsg rentMsg)
             {
-                _system.Log.Info($"Пользователь отправил запрос на выдачу {rent.RentId}");
-                // Печать аренды
-                return;
+                _system.Log.Info($"Пользователь отправил запрос на выдачу {rentMsg.RentId}");
+                var playerRent = State.PlayerInfo?.RentItems.FirstOrDefault(x => x.Id == rentMsg.RentId);
+                if (playerRent is not { ExpirationDate: null }
+                    || playerRent.ExpirationDate < DateTime.Now)
+                {
+                    return;
+                }
+
+                _system.PrintItem(_userId, playerRent);
+
             }
 
             if (msg is SponsorPlayerBuyEuiMsg buy)

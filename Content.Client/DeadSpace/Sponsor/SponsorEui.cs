@@ -69,6 +69,17 @@ public sealed class SponsorEui : BaseEui
         {
             PlayerInfo = playerUpdateEuiMsg.PlayerInfo;
             _window.UpdatePlayerInfo();
+            return;
+        }
+
+        if (msg is OperationResultEuiMsg message)
+        {
+            if (!string.IsNullOrEmpty(message.Result))
+            {
+                var messageBox = new SponsorMessageBox(message.Result);
+                messageBox.OpenCentered();
+            }
+            return;
         }
     }
 
@@ -79,6 +90,14 @@ public sealed class SponsorEui : BaseEui
             ItemId = itemId,
             PriceType = priceType,
             Days = days,
+        });
+    }
+
+    public void GetButton(int rentId)
+    {
+        SendMessage(new SponsorPlayerPrintRentEuiMsg
+        {
+            RentId = rentId,
         });
     }
 }
