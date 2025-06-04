@@ -39,7 +39,8 @@ public sealed partial class SponsorCalendarRow : Control, SponsorEui.ISponsorEui
         foreach (var calendarItem in _eui.Calendars.First(x => x.Id == _calendarId)
                      .CalendarItems
                      .SelectMany(x => x.Value)
-                     .Where(x => _itemIds.Contains(x.Id)))
+                     .Where(x => _itemIds.Contains(x.Id))
+                     .OrderBy(x => x.Date))
         {
             var row = new SponsorCalendarItemView(calendarItem.Id, _calendarId);
             row.SetEui(_eui);
