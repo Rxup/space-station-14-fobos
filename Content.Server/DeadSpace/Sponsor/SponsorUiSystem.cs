@@ -184,8 +184,13 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
         try
         {
             var response = await _httpClient
-                    .PostAsync($"api/sponsorUi/calendar/{userId}?calendarId={calendarId}", null);
+                .PostAsync($"api/sponsorUi/calendar/{userId}?calendarId={calendarId}", null);
             await NotifyAfterRequest(userId, response);
+            if (_sponsorEui.TryGetValue(userId, out var sponsorEui))
+            {
+                sponsorEui.SendMessage(new SponsorCalendarUpdateEuiMsg());
+            }
+
             return response.IsSuccessStatusCode;
         }
         catch (Exception e)
@@ -201,8 +206,9 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
         try
         {
             var response = await _httpClient
-                    .PostAsJsonAsync($"api/sponsorUi/{userId}", new { buyItemId, priceType, days });
+                .PostAsJsonAsync($"api/sponsorUi/{userId}", new { buyItemId, priceType, days });
             await NotifyAfterRequest(userId, response);
+
             return response.IsSuccessStatusCode;
         }
         catch (Exception e)

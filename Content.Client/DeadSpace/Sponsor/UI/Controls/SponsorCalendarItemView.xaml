@@ -12,6 +12,7 @@
                 <Control MinWidth="5" />
                 <RichTextLabel Name="ItemDescription" />
             </BoxContainer>
+            <Label Name="DateTaken" HorizontalExpand="True" />
             <Button Name="GetButton" />
         </BoxContainer>
     </BoxContainer>

@@ -21,7 +21,6 @@ public sealed class SponsorPlayerUpdateEuiMsg : EuiMessageBase
 [Serializable, NetSerializable]
 public sealed class SponsorCalendarUpdateEuiMsg : EuiMessageBase
 {
-
 }
 
 [Serializable, NetSerializable]
@@ -63,7 +62,12 @@ public sealed class SponsorCalendar
     public int Id { get; set; }
     public required string Name { get; set; }
 
-    public List<SponsorCalendarItem> CalendarItems { get; set; } = [];
+    public Dictionary<DateTimeRange, List<SponsorCalendarItem>> CalendarItems { get; set; } = [];
+
+    [Serializable, NetSerializable]
+    public record DateTimeRange(DateTime DateTimeStart, DateTime DateTimeEnd)
+    {
+    }
 }
 
 [Serializable, NetSerializable]
@@ -75,7 +79,7 @@ public sealed class SponsorCalendarItem
 
     public SponsorItem? Item { get; set; }
 
-    public DateOnly Date { get; set; }
+    public DateTime Date { get; set; }
 }
 
 [Serializable, NetSerializable]
@@ -84,7 +88,7 @@ public sealed class SponsorCalendarClaimItem
     public int Id { get; set; }
     public int CalendarItemId { get; set; }
     public int ItemId { get; set; }
-    public DateOnly ClaimedDate { get; set; }
+    public DateTime ClaimedDate { get; set; }
 }
 
 #endregion
@@ -106,14 +110,15 @@ public sealed class SponsorItem
     }
 
     public SponsorItemType ItemType { get; set; }
+}
 
-    public enum SponsorItemType
-    {
-        Entity = 0,
-        TTS = 1,
-        Customization = 2,
-        Trait = 3,
-    }
+[Serializable, NetSerializable]
+public enum SponsorItemType
+{
+    Entity = 0,
+    TTS = 1,
+    Customization = 2,
+    Trait = 3,
 }
 
 [Serializable, NetSerializable]
@@ -123,7 +128,7 @@ public sealed class SponsorPlayerInfo
     public int? DiscordId { get; set; }
     public Guid UserId { get; set; }
 
-    public int LastPlayerLevelId { get; set; }
+    public int? LastPlayerLevelId { get; set; }
     public int Hours { get; set; }
     public int Crystal { get; set; }
     public int Coin { get; set; }

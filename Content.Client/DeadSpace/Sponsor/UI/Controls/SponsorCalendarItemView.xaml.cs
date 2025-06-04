@@ -44,6 +44,7 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
         var calendarItem = _eui.Calendars
             .Single(x => x.Id == _calendarId)
             .CalendarItems
+            .SelectMany(x => x.Value)
             .Single(x => x.Id == _calendarItemId);
 
         var item = calendarItem.Item;
@@ -70,8 +71,10 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
         }
 
 
-        if (_eui.PlayerInfo.ClaimedCalendarItems.FirstOrDefault(x => x.CalendarItemId == calendarItem.Id) == null)
+        var claim = _eui.PlayerInfo.ClaimedCalendarItems.FirstOrDefault(x => x.CalendarItemId == calendarItem.Id);
+        if (claim == null)
         {
+            DateTaken.Visible = false;
             GetButton.OnPressed += args =>
             {
                 _eui.TryCalendarItem(_calendarId);
@@ -79,6 +82,9 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
         }
         else
         {
+            DateTaken.Visible = true;
+            DateTaken.Text = claim.ClaimedDate.ToShortDateString();
+
             GetButton.Text = "Уже получено";
             GetButton.Disabled = true;
         }

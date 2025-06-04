@@ -16,6 +16,7 @@ namespace Content.Client.DeadSpace.Sponsor.UI.Controls;
 public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
 {
     private readonly int _itemId;
+    private readonly bool _onlyPrint;
 
     [Dependency] private readonly IEntityManager _entityManager = default!;
     [Dependency] private readonly IPrototypeManager _proto = default!;
@@ -24,6 +25,7 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
     public SponsorItemRow(int itemId, bool onlyPrint = false)
     {
         _itemId = itemId;
+        _onlyPrint = onlyPrint;
         RobustXamlLoader.Load(this);
         IoCManager.InjectDependencies(this);
 
@@ -45,7 +47,16 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
     public void UpdatePlayerInfo()
     {
         var rent = _eui.PlayerInfo.RentItems.FirstOrDefault(x => x.ItemId == _itemId);
-        var item = _eui.Catalog.Single(x => x.Id == _itemId);
+        SponsorItem? item = null;
+        if (_onlyPrint)
+        {
+            var playerItem = _eui.PlayerInfo.RentItems.First(x => x.ItemId == _itemId);
+            item = _eui.Catalog.FirstOrDefault(x => x.Id == playerItem.ItemId);
+        }
+        else
+        {
+            item = _eui.Catalog.Single(x => x.Id == _itemId);
+        }
 
         if (rent != null && rent.ExpirationDate == null)
         {
@@ -69,7 +80,7 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
 
             Currency.Clear();
             Range.Clear();
-            if (item.Prices == null)
+            if (item!.Prices == null)
             {
                 RentButtons.Visible = false;
                 return;

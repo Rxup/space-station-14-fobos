@@ -24,8 +24,6 @@ public sealed partial class GeneralTab : Control, SponsorEui.ISponsorEui
         OnCalendarButtonPressed += OnOnCalendarButtonPressed;
     }
 
-    private readonly TimeOnly ZeroTimeOnly = TimeOnly.FromTimeSpan(TimeSpan.Zero);
-
     private void OnOnCalendarButtonPressed(BaseButton.ButtonEventArgs arg1, string arg2)
     {
         CalendarContainer.RemoveAllChildren();
@@ -38,15 +36,11 @@ public sealed partial class GeneralTab : Control, SponsorEui.ISponsorEui
 
         calendar ??= currentEui!.Calendars.First();
 
-        var weeked = calendar.CalendarItems.GroupBy(x => new Week(x.Date.ToDateTime(ZeroTimeOnly)));
-
-        foreach (var week in weeked)
+        foreach (var week in calendar.CalendarItems)
         {
             var calendarRow = new SponsorCalendarRow(
                     calendar.Id,
-                    week
-                        .Select(x => x.Id)
-                        .ToArray()
+                    week.Value.Select(x => x.Id).ToArray()
             );
             calendarRow.SetEui(currentEui!);
             calendarRow.UpdateCalendar();
