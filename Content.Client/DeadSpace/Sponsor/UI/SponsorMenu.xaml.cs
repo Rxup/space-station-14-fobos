@@ -21,13 +21,13 @@ public sealed partial class SponsorMenu : DefaultWindow, SponsorEui.ISponsorEui
         Tabs.SetTabTitle(0, "Главная");
         Tabs.SetTabTitle(1, "Инвентарь");
         Tabs.SetTabTitle(2, "Предметы");
-        Tabs.SetTabTitle(3, "Кастомизация");
+        // Tabs.SetTabTitle(3, "Кастомизация");
         //Tabs.OnTabChanged += TabsOnOnTabChanged;
 
         LoginField.Text = _playerManager.LocalSession?.Name ?? "<UNK>";
         CoinField.Text = "";
         CrystalField.Text = "";
-        // AddBalanceButton.OnPressed += _uriOpener.OpenUri(new Uri());
+        AddBalanceButton.OnPressed += _ => _uriOpener.OpenUri(new Uri("https://deadspace14.net"));
         AddBalanceButton.Visible = false;
     }
 /*
@@ -50,6 +50,18 @@ public sealed partial class SponsorMenu : DefaultWindow, SponsorEui.ISponsorEui
             if (tab is not SponsorEui.ISponsorEui esponsorEui)
                 continue;
             esponsorEui.SetEui(currentEui);
+        }
+    }
+
+    public void UpdateCalendar()
+    {
+        //relay
+        foreach (var tab in Tabs.Children)
+        {
+            if (tab is not SponsorEui.ISponsorEui esponsorEui)
+                continue;
+
+            esponsorEui.UpdateCalendar();
         }
     }
 

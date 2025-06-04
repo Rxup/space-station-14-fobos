@@ -31,7 +31,8 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
     private string _apiToken = "";
     private string _apiUrl = "";
 
-    public List<SponsorCatalogItem> Catalog { get; private set; } = [];
+    public List<SponsorItem> Catalog { get; private set; } = [];
+    public List<SponsorCalendar> Calendars { get; private set; } = [];
     public HashSet<int> SpawnedRents = [];
 
     public override void Initialize()
@@ -77,7 +78,9 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
     {
         ClearAllUi();
         Catalog = [];
-        Catalog = await _httpClient.GetFromJsonAsync<List<SponsorCatalogItem>>("api/sponsorUi/catalog") ?? [];
+        Catalog = await _httpClient.GetFromJsonAsync<List<SponsorItem>>("api/sponsorUi/catalog") ?? [];
+        Calendars = [];
+        Calendars = await _httpClient.GetFromJsonAsync<List<SponsorCalendar>>("api/sponsorUi/calendar") ?? [];
     }
 
     private void ClearAllUi()
@@ -176,38 +179,63 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
         }
     }
 
-    public async Task<bool> BuyItem(NetUserId userId, int buyItemId, PriceType priceType, int days)
+    public async Task<bool> ClaimCalendarItem(NetUserId userId, int calendarId)
     {
         try
         {
-            var response =
-                await _httpClient.PostAsJsonAsync($"api/sponsorUi/{userId}", new { buyItemId, priceType, days });
-
-            if (!response.IsSuccessStatusCode)
-            {
-                SendMessage(userId, await response.Content.ReadAsStringAsync());
-            }
-            else
-            {
-                if (_sponsorEui.TryGetValue(userId, out var sponsorEui))
-                {
-                    sponsorEui.State.PlayerInfo = await response.Content.ReadFromJsonAsync<SponsorPlayerInfo>();
-                    if (sponsorEui.State.PlayerInfo != null)
-                    {
-                        sponsorEui.SendMessage(new SponsorPlayerUpdateEuiMsg
-                        {
-                            PlayerInfo = sponsorEui.State.PlayerInfo!,
-                        });
-                    }
-                }
-            }
-
+            var response = await _httpClient
+                    .PostAsync($"api/sponsorUi/calendar/{userId}?calendarId={calendarId}", null);
+            await NotifyAfterRequest(userId, response);
             return response.IsSuccessStatusCode;
         }
         catch (Exception e)
         {
             Log.Error(e.ToString());
             return false;
+        }
+    }
+
+
+    public async Task<bool> BuyItem(NetUserId userId, int buyItemId, PriceType priceType, int days)
+    {
+        try
+        {
+            var response = await _httpClient
+                    .PostAsJsonAsync($"api/sponsorUi/{userId}", new { buyItemId, priceType, days });
+            await NotifyAfterRequest(userId, response);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.ToString());
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Делает popup на клиент с ошибкой или обновляет инофрмацию о пользователе при успехе
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="response">Ответ должен быть строкой в случае ошибки или SponsorPlayerInfo в случае успеха</param>
+    private async Task NotifyAfterRequest(NetUserId userId, HttpResponseMessage response)
+    {
+        if (!response.IsSuccessStatusCode)
+        {
+            SendMessage(userId, await response.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            if (_sponsorEui.TryGetValue(userId, out var sponsorEui))
+            {
+                sponsorEui.State.PlayerInfo = await response.Content.ReadFromJsonAsync<SponsorPlayerInfo>();
+                if (sponsorEui.State.PlayerInfo != null)
+                {
+                    sponsorEui.SendMessage(new SponsorPlayerUpdateEuiMsg
+                    {
+                        PlayerInfo = sponsorEui.State.PlayerInfo!,
+                    });
+                }
+            }
         }
     }
 
@@ -233,7 +261,7 @@ public sealed class SponsorUiSystem : SharedSponsorUiSystem
         var session = _playerManager.GetSessionById(userId);
         if (session.AttachedEntity is { Valid: true } playerEnt && _mobStateSystem.IsAlive(playerEnt))
         {
-            var catalogItem = Catalog.First(x => x.ItemId == playerRent.ItemId);
+            var catalogItem = Catalog.First(x => x.Id == playerRent.ItemId);
             var item = SpawnAtPosition(catalogItem.GamePrototype, Transform(playerEnt).Coordinates);
             SpawnedRents.Add(playerRent.Id);
             _handsSystem.TryPickupAnyHand(playerEnt, item);

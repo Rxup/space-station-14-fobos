@@ -1,0 +1,9 @@
+<Control xmlns="https://spacestation14.io">
+    <BoxContainer Margin="8,8,8,8" Orientation="Vertical">
+        <BoxContainer Orientation="Horizontal">
+            <ScrollContainer HScrollEnabled="True" VScrollEnabled="False" Name="WeekScroller">
+
+            </ScrollContainer>
+        </BoxContainer>
+    </BoxContainer>
+</Control>

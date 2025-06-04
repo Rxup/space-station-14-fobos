@@ -10,7 +10,7 @@ using Robust.Client.UserInterface.XAML;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Utility;
 
-namespace Content.Client.DeadSpace.Sponsor.UI;
+namespace Content.Client.DeadSpace.Sponsor.UI.Controls;
 
 [GenerateTypedNameReferences]
 public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
@@ -19,9 +19,6 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
 
     [Dependency] private readonly IEntityManager _entityManager = default!;
     [Dependency] private readonly IPrototypeManager _proto = default!;
-    private readonly ResPath CoinIcon = new("/Textures/_DeadSpace/Interface/Sponsor/coin.png");
-    private readonly ResPath CrystalIcon = new("/Textures/_DeadSpace/Interface/Sponsor/crystal.png");
-
     private SpriteSystem _spriteSystem = default!;
 
     public SponsorItemRow(int itemId, bool onlyPrint = false)
@@ -48,7 +45,7 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
     public void UpdatePlayerInfo()
     {
         var rent = _eui.PlayerInfo.RentItems.FirstOrDefault(x => x.ItemId == _itemId);
-        var item = _eui.Catalog.Single(x => x.ItemId == _itemId);
+        var item = _eui.Catalog.Single(x => x.Id == _itemId);
 
         if (rent != null && rent.ExpirationDate == null)
         {
@@ -121,7 +118,7 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
 
     public void UpdateCategory()
     {
-        var item = _eui.Catalog.Single(x => x.ItemId == _itemId);
+        var item = _eui.Catalog.Single(x => x.Id == _itemId);
 
         if (item.GamePrototype != null && _proto.TryIndex<EntityPrototype>(item.GamePrototype, out var entityPrototype))
         {
@@ -152,7 +149,7 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
     {
         if (obj != null)
             Range.SelectId(obj.Id);
-        var item = _eui.Catalog.Single(x => x.ItemId == _itemId);
+        var item = _eui.Catalog.Single(x => x.Id == _itemId);
         var price = item.Prices![(PriceType)Currency.SelectedId].First(x => x.Days == Range.SelectedId).Price;
         BuyButton.Text = $"Купить за {price}";
     }
@@ -162,7 +159,7 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
         if (obj != null)
             Currency.SelectId(obj.Id);
         Range.Clear();
-        var item = _eui.Catalog.Single(x => x.ItemId == _itemId);
+        var item = _eui.Catalog.Single(x => x.Id == _itemId);
         if (item.Prices == null)
             return;
 

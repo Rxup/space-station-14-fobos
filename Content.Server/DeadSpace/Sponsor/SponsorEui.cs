@@ -22,6 +22,7 @@ public sealed class SponsorEui : BaseEui
         State = new SponsorEuiState
         {
             Catalog = system.Catalog,
+            Calendars = system.Calendars,
             PlayerInfo = null
         };
     }
@@ -41,6 +42,7 @@ public sealed class SponsorEui : BaseEui
             State = new SponsorEuiState
             {
                 Catalog = _system.Catalog,
+                Calendars = _system.Calendars,
                 PlayerInfo = await _system.GetPlayerInfo(_userId),
             };
 
@@ -72,8 +74,7 @@ public sealed class SponsorEui : BaseEui
             {
                 _system.Log.Info($"Пользователь отправил запрос на выдачу {rentMsg.RentId}");
                 var playerRent = State.PlayerInfo?.RentItems.FirstOrDefault(x => x.Id == rentMsg.RentId);
-                if (playerRent is not { ExpirationDate: null }
-                    || playerRent.ExpirationDate < DateTime.Now)
+                if (playerRent == null || playerRent.ExpirationDate < DateTime.Now)
                 {
                     return;
                 }
@@ -86,6 +87,13 @@ public sealed class SponsorEui : BaseEui
             {
                 _system.Log.Info($"Пользователь отправил запрос на разовую покупки {buy.ItemId}");
                 await _system.BuyItem(_userId, buy.ItemId, buy.PriceType, buy.Days);
+                return;
+            }
+
+            if (msg is SponsorTryGetCalendarItemEuiMsg calendar)
+            {
+                _system.Log.Info($"Пользователь пытается получить предмет календаря({calendar.CalendarId})");
+                await _system.ClaimCalendarItem(_userId, calendar.CalendarId);
                 return;
             }
         }

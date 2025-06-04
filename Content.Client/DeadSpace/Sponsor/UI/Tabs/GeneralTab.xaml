@@ -1,7 +1,31 @@
 ﻿<tabs:GeneralTab xmlns="https://spacestation14.io"
-                  xmlns:tabs="clr-namespace:Content.Client.DeadSpace.Sponsor.UI.Tabs"
-                  xmlns:ui="clr-namespace:Content.Client.DeadSpace.Sponsor.UI">
-    <BoxContainer Orientation="Vertical" VerticalExpand="True" HorizontalAlignment="Stretch">
-        <Label Text="Главная в разработке 2"></Label>
-    </BoxContainer>
+                 xmlns:tabs="clr-namespace:Content.Client.DeadSpace.Sponsor.UI.Tabs"
+                 xmlns:ui="clr-namespace:Content.Client.DeadSpace.Sponsor.UI">
+
+    <PanelContainer VerticalExpand="True" HorizontalExpand="True">
+        <BoxContainer Orientation="Horizontal" VerticalExpand="True">
+            <PanelContainer VerticalExpand="True">
+                <BoxContainer Name="CalendarList" Orientation="Vertical" Visible="False">
+                    <!--  Category buttons are added here by code  -->
+                </BoxContainer>
+            </PanelContainer>
+            <ScrollContainer
+                Name="StoreListingsScroll"
+                HScrollEnabled="False"
+                HorizontalExpand="True"
+                MinSize="100 256"
+                SizeFlagsStretchRatio="2"
+                VerticalExpand="True">
+                <BoxContainer
+                    Orientation="Vertical"
+                    SizeFlagsStretchRatio="2"
+                    MinSize="100 256"
+                    VerticalExpand="True"
+                    HorizontalAlignment="Stretch"
+                    Name="CalendarContainer">
+
+                </BoxContainer>
+            </ScrollContainer>
+        </BoxContainer>
+    </PanelContainer>
 </tabs:GeneralTab>

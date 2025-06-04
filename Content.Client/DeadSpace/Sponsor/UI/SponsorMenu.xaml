@@ -39,7 +39,7 @@
             <tabs:GeneralTab Name="GeneralTab"></tabs:GeneralTab>
             <tabs:SubsTab Name="SubsTab"></tabs:SubsTab>
             <tabs:ItemsTab Name="ItemsTab"></tabs:ItemsTab>
-            <tabs:CustomsTab Name="CustomsTab"></tabs:CustomsTab>
+            <!-- <tabs:CustomsTab Name="CustomsTab"></tabs:CustomsTab> -->
         </TabContainer>
     </BoxContainer>
 

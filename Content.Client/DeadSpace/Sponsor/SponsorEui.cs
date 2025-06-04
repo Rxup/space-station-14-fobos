@@ -22,6 +22,11 @@ public sealed class SponsorEui : BaseEui
         {
 
         }
+
+        void UpdateCalendar()
+        {
+
+        }
     }
 
     private SponsorMenu _window;
@@ -46,7 +51,8 @@ public sealed class SponsorEui : BaseEui
         _window.Close();
     }
 
-    public IReadOnlyList<SponsorCatalogItem> Catalog { get; private set; } = [];
+    public IReadOnlyList<SponsorItem> Catalog { get; private set; } = [];
+    public IReadOnlyList<SponsorCalendar> Calendars { get; private set; } = [];
     public SponsorPlayerInfo PlayerInfo { get; private set; } = new();
 
     public override void HandleState(EuiStateBase state)
@@ -54,6 +60,7 @@ public sealed class SponsorEui : BaseEui
         if(state is not SponsorEuiState sponsorEuiState)
             return;
         Catalog = sponsorEuiState.Catalog;
+        Calendars = sponsorEuiState.Calendars;
         _window.UpdateCategory();
 
         if (sponsorEuiState.PlayerInfo != null)
@@ -72,6 +79,12 @@ public sealed class SponsorEui : BaseEui
             return;
         }
 
+        if (msg is SponsorCalendarUpdateEuiMsg calendarUpdateEuiMsg)
+        {
+            _window.UpdateCalendar();
+            return;
+        }
+
         if (msg is OperationResultEuiMsg message)
         {
             if (!string.IsNullOrEmpty(message.Result))
@@ -81,6 +94,7 @@ public sealed class SponsorEui : BaseEui
             }
             return;
         }
+
     }
 
     public void BuyButton(int itemId, PriceType priceType, int days)
@@ -90,6 +104,14 @@ public sealed class SponsorEui : BaseEui
             ItemId = itemId,
             PriceType = priceType,
             Days = days,
+        });
+    }
+
+    public void TryCalendarItem(int calendarId)
+    {
+        SendMessage(new SponsorTryGetCalendarItemEuiMsg()
+        {
+            CalendarId = calendarId,
         });
     }
 
