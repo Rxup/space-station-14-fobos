@@ -41,9 +41,9 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
 
     public void UpdateCalendar()
     {
-        var calendarItem = _eui.Calendars
-            .Single(x => x.Id == _calendarId)
-            .CalendarItems
+        var calendar = _eui.Calendars
+            .First(x => x.Id == _calendarId);
+        var calendarItem = calendar.CalendarItems
             .SelectMany(x => x.Value)
             .Single(x => x.Id == _calendarItemId);
 
@@ -71,10 +71,38 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
         }
 
 
-        var claim = _eui.PlayerInfo.ClaimedCalendarItems.FirstOrDefault(x => x.CalendarItemId == calendarItem.Id);
+        var claimed = _eui.PlayerInfo.ClaimedCalendarItems.OrderBy(x => x.ClaimedDate).ToList();
+        var claim = claimed.FirstOrDefault(x => x.CalendarItemId == calendarItem.Id);
         if (claim == null)
         {
             DateTaken.Visible = false;
+            var lastClaimed = claimed.LastOrDefault();
+            var items = calendar.CalendarItems.SelectMany(x => x.Value).OrderBy(x => x.Date).ToList();
+
+            if (lastClaimed == null)
+            {
+                if (calendarItem.Date != DateTime.Today)
+                {
+                    GetButton.Disabled = true;
+                }
+            }
+            else
+            {
+                var index = items.FindIndex(x => x.Id == lastClaimed.CalendarItemId);
+                if (index + 1 < items.Count)
+                {
+                    if (calendarItem != items[index + 1])
+                    {
+                        GetButton.Text = calendarItem.Date.ToShortDateString();
+                        GetButton.Disabled = true;
+                    }
+                    else
+                    {
+                        GetButton.Text = "Получить";
+                    }
+                }
+            }
+
             GetButton.OnPressed += args =>
             {
                 _eui.TryCalendarItem(_calendarId);
