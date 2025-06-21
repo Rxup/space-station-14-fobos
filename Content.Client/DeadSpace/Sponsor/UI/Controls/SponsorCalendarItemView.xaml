@@ -1,19 +1,19 @@
 <Control xmlns="https://spacestation14.io">
-    <BoxContainer Margin="8,8,8,8" Orientation="Vertical">
+    <BoxContainer Margin="8,8,8,8" Orientation="Vertical" MinHeight="100" MinWidth="100">
         <BoxContainer Orientation="Vertical">
-            <BoxContainer HorizontalExpand="True" Orientation="Vertical">
+            <BoxContainer HorizontalExpand="True" Orientation="Vertical" Margin="4,4,4,4">
                 <Label Name="ItemName" HorizontalExpand="True" />
                 <TextureRect
                     Name="ItemTexture"
                     Margin="0,0,4,0"
                     MinSize="48 48"
                     Stretch="KeepAspectCentered"
-                    Visible="False"/>
-                <Control MinWidth="5" />
+                    Visible="True"/>
                 <RichTextLabel Name="ItemDescription" />
             </BoxContainer>
-            <Label Name="DateTaken" HorizontalExpand="True" />
-            <Button Name="GetButton" />
+            <PanelContainer StyleClasses="HighDivider" />
+            <Label Name="DateTaken" HorizontalExpand="True" Margin="4,4,4,4"/>
+            <Button Name="GetButton" Margin="4,4,4,4"/>
         </BoxContainer>
     </BoxContainer>
 </Control>

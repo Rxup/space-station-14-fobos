@@ -40,9 +40,9 @@ public sealed partial class SubsTab : Control, SponsorEui.ISponsorEui
     public void UpdatePlayerInfo()
     {
         StoreListingsContainer.RemoveAllChildren();
-        foreach (var item in currentEui!.PlayerInfo.RentItems)
+        foreach (var rentItem in currentEui!.PlayerInfo.RentItems.DistinctBy(x => x.ItemId))
         {
-            var row = new SponsorItemRow(item.Id, true);
+            var row = new SponsorItemRow(rentItem.ItemId, true);
             row.SetEui(currentEui);
             row.UpdateCategory();
             row.UpdatePlayerInfo();

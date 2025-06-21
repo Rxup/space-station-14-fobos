@@ -35,7 +35,7 @@ public sealed class SponsorPlayerBuyEuiMsg : EuiMessageBase
     public required PriceType PriceType;
     public required int Days;
 }
-
+[Serializable, NetSerializable]
 public sealed class SponsorTryGetCalendarItemEuiMsg : EuiMessageBase
 {
     public required int CalendarId;
@@ -62,12 +62,7 @@ public sealed class SponsorCalendar
     public int Id { get; set; }
     public required string Name { get; set; }
 
-    public Dictionary<DateTimeRange, List<SponsorCalendarItem>> CalendarItems { get; set; } = [];
-
-    [Serializable, NetSerializable]
-    public record DateTimeRange(DateTime DateTimeStart, DateTime DateTimeEnd)
-    {
-    }
+    public List<SponsorCalendarItem> CalendarItems { get; set; } = [];
 }
 
 [Serializable, NetSerializable]

@@ -5,27 +5,24 @@
     <PanelContainer VerticalExpand="True" HorizontalExpand="True">
         <BoxContainer Orientation="Horizontal" VerticalExpand="True">
             <PanelContainer VerticalExpand="True">
-                <BoxContainer Name="CalendarList" Orientation="Vertical" Visible="False">
-                    <!--  Category buttons are added here by code  -->
+                <BoxContainer Orientation="Vertical" Visible="True">
+                    <ScrollContainer Name="CalendarList">
+                        <!--  Category buttons are added here by code  -->
+                    </ScrollContainer>
                 </BoxContainer>
             </PanelContainer>
-            <ScrollContainer
-                Name="StoreListingsScroll"
-                HScrollEnabled="False"
-                HorizontalExpand="True"
-                MinSize="100 256"
+            <BoxContainer
+                Orientation="Vertical"
                 SizeFlagsStretchRatio="2"
-                VerticalExpand="True">
-                <BoxContainer
-                    Orientation="Vertical"
-                    SizeFlagsStretchRatio="2"
-                    MinSize="100 256"
-                    VerticalExpand="True"
-                    HorizontalAlignment="Stretch"
-                    Name="CalendarContainer">
-
-                </BoxContainer>
-            </ScrollContainer>
+                MinSize="100 256"
+                VerticalExpand="True"
+                HorizontalExpand="True"
+                Visible="True"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Name="CalendarContainer">
+                <!-- Weeks(calendar rows) -->
+            </BoxContainer>
         </BoxContainer>
     </PanelContainer>
 </tabs:GeneralTab>

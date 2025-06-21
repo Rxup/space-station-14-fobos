@@ -47,15 +47,25 @@ public sealed partial class SponsorItemRow : Control, SponsorEui.ISponsorEui
     public void UpdatePlayerInfo()
     {
         var rent = _eui.PlayerInfo.RentItems.FirstOrDefault(x => x.ItemId == _itemId);
-        SponsorItem? item = null;
+        var item = _eui.Catalog.Single(x => x.Id == _itemId);
         if (_onlyPrint)
         {
-            var playerItem = _eui.PlayerInfo.RentItems.First(x => x.ItemId == _itemId);
-            item = _eui.Catalog.FirstOrDefault(x => x.Id == playerItem.ItemId);
-        }
-        else
-        {
-            item = _eui.Catalog.Single(x => x.Id == _itemId);
+            var playerItem = _eui.PlayerInfo.RentItems.FirstOrDefault(x => x.ItemId == _itemId);
+            if (playerItem == null)
+            {
+                StoreItemGetButton.Text = "Недоступно";
+                DiscountSubText.Text = "Недоступно";
+                RentButtons.Visible = false;
+                return;
+            }
+
+            if (playerItem.ExpirationDate == null || playerItem.ExpirationDate < DateTime.Now)
+            {
+                StoreItemGetButton.Text = $"Получить";
+                DiscountSubText.Text = "Навсегда";
+                RentButtons.Visible = false;
+                return;
+            }
         }
 
         if (rent != null && rent.ExpirationDate == null)

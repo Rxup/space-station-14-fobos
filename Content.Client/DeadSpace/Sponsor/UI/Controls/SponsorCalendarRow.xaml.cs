@@ -13,6 +13,7 @@ public sealed partial class SponsorCalendarRow : Control, SponsorEui.ISponsorEui
 {
     private readonly int _calendarId;
     private readonly int[] _itemIds;
+    private readonly int _calendarNum;
     private SponsorEui _eui = default!;
 
     [Dependency] private readonly IEntityManager _entityManager = default!;
@@ -24,21 +25,22 @@ public sealed partial class SponsorCalendarRow : Control, SponsorEui.ISponsorEui
         _eui = currentEui;
     }
 
-    public SponsorCalendarRow(int calendarId, int[] itemIds)
+    public SponsorCalendarRow(int calendarId, int[] itemIds, int calendarNum)
     {
         _calendarId = calendarId;
         _itemIds = itemIds;
+        _calendarNum = calendarNum;
         RobustXamlLoader.Load(this);
         IoCManager.InjectDependencies(this);
 
         _spriteSystem = _entityManager.System<SpriteSystem>();
+        WeekLabel.Text = $"Неделя {calendarNum}";
     }
 
     public void UpdateCalendar()
     {
         foreach (var calendarItem in _eui.Calendars.First(x => x.Id == _calendarId)
                      .CalendarItems
-                     .SelectMany(x => x.Value)
                      .Where(x => _itemIds.Contains(x.Id))
                      .OrderBy(x => x.Date))
         {

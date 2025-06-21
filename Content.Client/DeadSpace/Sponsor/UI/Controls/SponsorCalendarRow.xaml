@@ -1,8 +1,13 @@
 <Control xmlns="https://spacestation14.io">
-    <BoxContainer Margin="8,8,8,8" Orientation="Vertical">
-        <BoxContainer Orientation="Horizontal">
-            <ScrollContainer HScrollEnabled="True" VScrollEnabled="False" Name="WeekScroller">
+    <BoxContainer Orientation="Vertical" Margin="12,12,12,12">
+        <Label Name="WeekLabel" HorizontalExpand="True" Margin="8,8,8,8" />
+        <PanelContainer StyleClasses="HighDivider" />
+        <BoxContainer Margin="8,8,8,8" Orientation="Horizontal" HorizontalExpand="True" VerticalExpand="True"
+                      MinHeight="200" VerticalAlignment="Stretch">
+            <ScrollContainer HScrollEnabled="True" VScrollEnabled="False" HorizontalExpand="True" Margin="8,8,8,8">
+                <BoxContainer Orientation="Horizontal" Name="WeekScroller" MinHeight="200">
 
+                </BoxContainer>
             </ScrollContainer>
         </BoxContainer>
     </BoxContainer>

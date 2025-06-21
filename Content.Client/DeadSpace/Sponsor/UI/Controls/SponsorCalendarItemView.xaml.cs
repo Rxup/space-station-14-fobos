@@ -37,6 +37,11 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
         IoCManager.InjectDependencies(this);
 
         _spriteSystem = _entityManager.System<SpriteSystem>();
+
+        GetButton.OnPressed += args =>
+        {
+            _eui.TryCalendarItem(_calendarId);
+        };
     }
 
     public void UpdateCalendar()
@@ -44,7 +49,6 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
         var calendar = _eui.Calendars
             .First(x => x.Id == _calendarId);
         var calendarItem = calendar.CalendarItems
-            .SelectMany(x => x.Value)
             .Single(x => x.Id == _calendarItemId);
 
         var item = calendarItem.Item;
@@ -66,7 +70,8 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
         }
         else
         {
-            ItemTexture.TexturePath = CrystalIcon.Filename;
+            ItemTexture.Visible = true;
+            ItemTexture.TexturePath = CrystalIcon.CanonPath;
             ItemName.Text = $"{calendarItem.Crystal} кристаллов";
         }
 
@@ -77,36 +82,43 @@ public sealed partial class SponsorCalendarItemView : Control, SponsorEui.ISpons
         {
             DateTaken.Visible = false;
             var lastClaimed = claimed.LastOrDefault();
-            var items = calendar.CalendarItems.SelectMany(x => x.Value).OrderBy(x => x.Date).ToList();
+            var items = calendar.CalendarItems.OrderBy(x => x.Date).ToList();
 
+            int? itemIndex = null;
+            var dateTimeNow = DateTime.Now;
             if (lastClaimed == null)
             {
-                if (calendarItem.Date != DateTime.Today)
+                if (calendarItem.Date > dateTimeNow)
                 {
+                    GetButton.Text = dateTimeNow.ToShortDateString();
                     GetButton.Disabled = true;
+                    return;
                 }
-            }
-            else
-            {
-                var index = items.FindIndex(x => x.Id == lastClaimed.CalendarItemId);
-                if (index + 1 < items.Count)
+
+                if (items.MinBy(x => x.Date) == calendarItem)
                 {
-                    if (calendarItem != items[index + 1])
-                    {
-                        GetButton.Text = calendarItem.Date.ToShortDateString();
-                        GetButton.Disabled = true;
-                    }
-                    else
-                    {
-                        GetButton.Text = "Получить";
-                    }
+                    GetButton.Text = "Получить";
+                    return;
                 }
+
+                GetButton.Text = "WTF???";
+                GetButton.Disabled = true;
+                return;
             }
 
-            GetButton.OnPressed += args =>
+            itemIndex = items.FindIndex(x => x.Id == lastClaimed.CalendarItemId);
+            if (itemIndex + 1 < items.Count)
             {
-                _eui.TryCalendarItem(_calendarId);
-            };
+                if (calendarItem != items[itemIndex.Value + 1])
+                {
+                    GetButton.Text = calendarItem.Date.ToShortDateString();
+                    GetButton.Disabled = true;
+                }
+                else
+                {
+                    GetButton.Text = "Получить";
+                }
+            }
         }
         else
         {

@@ -24,23 +24,55 @@ public sealed partial class GeneralTab : Control, SponsorEui.ISponsorEui
         OnCalendarButtonPressed += OnOnCalendarButtonPressed;
     }
 
-    private void OnOnCalendarButtonPressed(BaseButton.ButtonEventArgs arg1, string arg2)
+    private int GetDayOfWeek(DateTime date)
+    {
+        var d = date.Day;
+        var m = date.Month;
+        var y = date.Year;
+
+        if (m < 3)
+        {
+            m += 12;
+            y--;
+        }
+
+        var h = (d + (13 * (m + 1)) / 5 + y + y / 4 - y / 100 + y / 400) % 7;
+        return (h + 5) % 7;
+    }
+
+    private int GetWeekOfYear(DateTime date)
+    {
+        int dayOfWeek = GetDayOfWeek(date);
+        var thursday = date.AddDays(3 - dayOfWeek);
+        var jan1 = new DateTime(thursday.Year, 1, 1);
+        var days = (thursday - jan1).Days;
+        return (days / 7) + 1;
+    }
+
+    private void OnOnCalendarButtonPressed(BaseButton.ButtonEventArgs? arg1, string arg2)
     {
         CalendarContainer.RemoveAllChildren();
 
-        SponsorCalendar? calendar = null;
-        if (_currentCalendar != string.Empty)
+        var calendar = _currentCalendar != string.Empty
+            ? currentEui!.Calendars.FirstOrDefault(x => x.Name == _currentCalendar)
+            : currentEui!.Calendars.FirstOrDefault();
+
+        if (calendar == null)
         {
-            calendar = currentEui!.Calendars.FirstOrDefault(x => x.Name == _currentCalendar);
+            return;
         }
 
-        calendar ??= currentEui!.Calendars.First();
+        var byWeeks = calendar.CalendarItems
+            .GroupBy(item => GetWeekOfYear(item.Date))
+            .OrderBy(x => x.Key)
+            .ToDictionary(g => g.Key, g => g.ToList());
 
-        foreach (var week in calendar.CalendarItems)
+        foreach (var week in byWeeks)
         {
             var calendarRow = new SponsorCalendarRow(
-                    calendar.Id,
-                    week.Value.Select(x => x.Id).ToArray()
+                calendar.Id,
+                week.Value.Select(x => x.Id).ToArray(),
+                week.Key
             );
             calendarRow.SetEui(currentEui!);
             calendarRow.UpdateCalendar();
@@ -58,29 +90,24 @@ public sealed partial class GeneralTab : Control, SponsorEui.ISponsorEui
         public string? Id;
     }
 
-    public event Action<BaseButton.ButtonEventArgs, string>? OnCalendarButtonPressed;
+    public event Action<BaseButton.ButtonEventArgs?, string>? OnCalendarButtonPressed;
 
     private string _currentCalendar = string.Empty;
 
     private void PopulateCalendarsButtons()
     {
-        var allCalendarNames = new List<string>();
-        foreach (var listing in currentEui!.Calendars.Select(x => x.Name).Distinct())
-        {
-            allCalendarNames.Add(listing);
-        }
+        var allCalendarNames = currentEui!.Calendars.Select(x => x.Name).Distinct().Order().ToList();
 
-        allCalendarNames = allCalendarNames.OrderBy(c => c).ToList();
-
-        // This will reset the Current Category selection if nothing matches the search.
         if (allCalendarNames.All(category => category != _currentCalendar))
             _currentCalendar = string.Empty;
 
         if (_currentCalendar == string.Empty && allCalendarNames.Count > 0)
+        {
             _currentCalendar = allCalendarNames.First();
+        }
 
         CalendarList.Children.Clear();
-        if (allCalendarNames.Count < 1)
+        if (allCalendarNames.Count < 2)
         {
             CalendarList.Visible = false;
         }
@@ -101,5 +128,7 @@ public sealed partial class GeneralTab : Control, SponsorEui.ISponsorEui
             catButton.OnPressed += args => OnCalendarButtonPressed?.Invoke(args, catButton.Id);
             CalendarList.AddChild(catButton);
         }
+
+        OnCalendarButtonPressed?.Invoke(null, string.Empty);
     }
 }

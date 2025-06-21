@@ -62,6 +62,10 @@ public sealed class SponsorEui : BaseEui
         Catalog = sponsorEuiState.Catalog;
         Calendars = sponsorEuiState.Calendars;
         _window.UpdateCategory();
+        if (sponsorEuiState.Calendars != null && sponsorEuiState.Calendars.Count > 0)
+        {
+            _window.UpdateCalendar();
+        }
 
         if (sponsorEuiState.PlayerInfo != null)
         {
